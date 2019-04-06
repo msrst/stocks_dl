@@ -72,6 +72,6 @@ Querys prices from 28th January 2018 till 01st march 2019.
 
 Copyright (C) Matthias Rosenthal
 
-    License:_ [GPL](./LICENSE)
+License:_ [GPL](./LICENSE)
 
 Applies to all files
