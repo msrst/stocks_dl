@@ -2,6 +2,8 @@
 
 Library for downloading stock data at boerse-frankfurt.de and finance.yahoo.com.
 
+Disclaimer: Please note that using this library may not be legal.
+
 Downloadable data:
 
  * daily prices
@@ -27,8 +29,7 @@ Now in the cloned folder, run
 
 Now you can test the example:
 
-    cd example
-    ./example1 bf_prices DE0007236101 28.1.2018_01.03.2019
+    ./example/example1 bf_prices DE0007236101
 
 (see section "Using the example" for more information on how to use the sample)
 
@@ -52,26 +53,38 @@ Turn on debug output of the stocks_dl-library (default off)
 
 Downloads dividends from finance.yahoo.com until 01 march 2019
 
-    ./example1 bf_dividends DE0007236101
+    ./example/example1 bf_dividends DE0007236101
 
-Downloads all dividends listed on www.boerse-frankfurt.de (boerse-frankfurt has only dividends data for european companies and only lists the dividends of the last five years).
+Downloads all dividends listed on www.boerse-frankfurt.de (boerse-frankfurt has only dividends data for european companies and only lists the dividends that were paid in 1999 or later).
 
-    ./example1 bf_share_data DE0007236101
+    ./example/example1 bf_share_data DE0007236101
 
-![screenshot bf_share_data](https://github.com/msrst/stocks_dl/blob/master/screenshots/bf_share_data.png)
+![screenshot bf_share_data](https://github.com/msrst/stocks_dl/blob/master/screenshots/bf_share_data_20.png)
 
-Displays balance sheets from www.boerse-frankfurt.de (boerse-frankfurt has only balance sheets for german companies). Also gets the WKN and the stock exchange symbol. *DE0007236101* is the ISIN of the share to query data for.
+Displays balance sheets from www.boerse-frankfurt.de (boerse-frankfurt has only balance sheets for german companies), since 1999. Also gets the WKN and the stock exchange symbol. *DE0007236101* is the ISIN of the share to query data for.
 
-    ./example/example1 bf_prices DE0007236101 28.1.2018_01.03.2019
+    ./example/example1 bf_prices DE0007236101
 
-![screenshot bf_prices](https://github.com/msrst/stocks_dl/blob/master/screenshots/bf_prices.png)
+![screenshot bf_prices](https://github.com/msrst/stocks_dl/blob/master/screenshots/bf_prices_20.png)
 
-Querys prices from 28th January 2018 till 01st march 2019.
+## The boerse frankfurt "api"
+
+In the second half of 2019, boerse-frankfurt completely changed their way of delivering stocks data to website users. Before, they seemed to do everything to confuse developers. For example, the server sent a calculation like 5 * 2 + 3 an which the web browser (or download tool) had to evaluate. The result was then sent back to the server when gathering stocks data.
+
+The new api is very comfortable to use: It seems to be a spring boot (java, tomcat) server. There are also verbose error messages enabled, so it is really comfortable to use this api.
+Here are some examples:
+https://api.boerse-frankfurt.de/data/price_history?limit=50&offset=0&isin=DE0007236101&mic=XFRA&minDate=2019-03-27&maxDate=2020-03-27
+ -> high, low, open, close, volume (JSON) (min year: depending on share, maybe 1990)
+https://api.boerse-frankfurt.de/data/dividend_information?isin=DE0007236101&limit=50
+ -> dividends JSON
+https://api.boerse-frankfurt.de/data/historical_key_data?isin=DE0007236101&limit=50
+ -> historical key figures, like total assets or other important balance sheet figures (JSON) (min year: 1999)
+There are more endpoints, these are only some examples.
 
 ## License
 
 Copyright (C) Matthias Rosenthal
 
-License:_ [GPL](./LICENSE)
+License: [GPL](./LICENSE)
 
 Applies to all files

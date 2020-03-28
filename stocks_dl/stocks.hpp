@@ -136,6 +136,7 @@ struct dividend
 {
 	time_day date;
 	double dividend;
+	std::string currency; // only set when using on boerse frankfurt
 };
 
 void AdjustSplits(std::vector<daily_rate_nullable>& prices, std::vector<shares_split>& splits); // Changes 

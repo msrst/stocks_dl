@@ -16,7 +16,7 @@
 # along with stocks_dl. If not, see <http://www.gnu.org/licenses/>
 ######################################################################
 
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0.2)
 project (stocks_dl_lib)
 
 # If you do not want to use the default boost lib or if you do not have
@@ -35,7 +35,10 @@ configure_file (
 	"stocks_dl_config.h"
 )
 
-include_directories(${Boost_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS})
-add_library(stocks_dl boerse_frankfurt.cpp curlwrapper.cpp dividends.cpp stocks.cpp table_parser.cpp time_day.cpp yahoodownloader.cpp
-    utils/logger.cpp utils/calculator.cpp utils/csv_reader.cpp utils/mini_xml.cpp utils/utils.cpp boerse_frankfurt.cpp)
+add_library(stocks_dl boerse_frankfurt.cpp boerse_frankfurt_sheet.cpp boerse_frankfurt_parser.cpp 
+    curlwrapper.cpp dividends.cpp stocks.cpp time_day.cpp yahoodownloader.cpp
+    utils/logger.cpp utils/calculator.cpp utils/csv_reader.cpp utils/utils.cpp)
+# include ${CMAKE_CURRENT_BINARY_DIR} (resolved to build/stocks_dl or something like that) to 
+# include the generated config file stocks_dl_config.h
+target_include_directories(stocks_dl PUBLIC ${Boost_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(stocks_dl ${Boost_LIBRARIES} pthread ssl crypto ${CURL_LIBRARIES})

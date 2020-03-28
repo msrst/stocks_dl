@@ -16,6 +16,7 @@
  * along with stocks_dl. If not, see <http://www.gnu.org/licenses/>
  **********************************************************************/
 
+#include <sstream>
 #include "stocks.hpp"
 
 namespace stocks_dl {

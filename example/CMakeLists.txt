@@ -16,19 +16,18 @@
 # along with stocks_dl. If not, see <http://www.gnu.org/licenses/>
 ######################################################################
 
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0.2)
 project (stocks_dl_example)
 
 find_package(Boost COMPONENTS system signals)
 find_package(CURL)
 
-include_directories ("../")
-
 # if set, prints the command lines of the compilation steps
 #set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 #if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS})
   add_executable(example1 main.cpp)
+  # ../ is for stocks_dl
+  target_include_directories(example1 PUBLIC ${Boost_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} ../)
   target_link_libraries(example1 ${Boost_LIBRARIES} pthread ssl crypto ${CURL_LIBRARIES} stocks_dl)
 #endif()

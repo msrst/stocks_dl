@@ -16,7 +16,7 @@
 # along with stocks_dl. If not, see <http://www.gnu.org/licenses/>
 ######################################################################
 
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0.2)
 project (stocks_dl)
 
 add_subdirectory(stocks_dl)

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 				c_share.name = argv[3];
 				
 				time_day trading_day_min(01, 01, 1970);
-				time_day trading_day_max(01, 03, 2019);
+				time_day trading_day_max(01, 04, 2020);
 				std::vector<dividend> dividends;
 				if(ydl.Download(c_share, c_share.YSymbol(), trading_day_min, trading_day_max, dividends)) {
 					std::cout << "Error: Dividends could not be downloaded." << std::endl;
@@ -61,11 +61,18 @@ int main(int argc, char *argv[])
 				std::cout << "Error: symbol " << c_share.YSymbol() << " is misformatted." << std::endl;
 			}
 		}
-		else if(argv[1] == std::string("bf_prices")) {
+		else {
+			PrintHelp();
+		}
+	}
+	else if(argc == 3) {
+		if(argv[1] == std::string("bf_prices")) {
 			boerse_frankfurt::price_downloader c_price_downloader(&bf_converter, c_logger);
 			if(!c_price_downloader.Init()) {
 				std::vector<daily_price> prices;
-				if(c_price_downloader.Download(argv[2], argv[3], prices)) {
+				time_day trading_day_min(01, 03, 2020);
+				time_day trading_day_max(01, 04, 2020);
+				if(c_price_downloader.Download(argv[2], trading_day_min, trading_day_max, prices)) {
 					std::cout << "Error: Prices could not be downloaded." << std::endl;
 				}
 				else {
@@ -76,12 +83,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		else {
-			PrintHelp();
-		}
-	}
-	else if(argc == 3) {
-		if(argv[1] == std::string("bf_dividends")) {
+		else if(argv[1] == std::string("bf_dividends")) {
 			boerse_frankfurt::share_downloader c_share_downloader(&bf_converter, c_logger);
 			if(!c_share_downloader.Init()) {					
 				std::vector<dividend> dividends;
