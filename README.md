@@ -10,11 +10,11 @@ Downloadable data:
  * dividends
  * balance sheets (only from boerse-frankfurt.de)
 
-I have tested the library only under Linux (Debian), but it should also run under Windows.
+I have tested the library only under Linux (Debian 9, Debian 10, Ubuntu 18.04), but it should also run under Windows.
 
 ## Building the library and the example
 
-To build, you need cmake, the boost library (sublibs system, signals, thread and spirit) and the CURL C library. Install them for example under debian with
+To build, you need cmake, the boost library (sublibs system, signals, thread and property_tree) and the CURL C library. Install them for example under debian with
 
     apt install cmake libboost-dev libcurl4-openssl-dev
 
@@ -24,7 +24,9 @@ Then clone the repository.
 
 Now in the cloned folder, run
 
-    cmake .
+    mkdir build
+    cd build
+    cmake ..
     make
 
 Now you can test the example:
@@ -73,11 +75,17 @@ In the second half of 2019, boerse-frankfurt completely changed their way of del
 
 The new api is very comfortable to use: It seems to be a spring boot (java, tomcat) server. There are also verbose error messages enabled, so it is really comfortable to use this api.
 Here are some examples:
+
 https://api.boerse-frankfurt.de/data/price_history?limit=50&offset=0&isin=DE0007236101&mic=XFRA&minDate=2019-03-27&maxDate=2020-03-27
+
  -> high, low, open, close, volume (JSON) (min year: depending on share, maybe 1990)
+
 https://api.boerse-frankfurt.de/data/dividend_information?isin=DE0007236101&limit=50
+
  -> dividends JSON
+
 https://api.boerse-frankfurt.de/data/historical_key_data?isin=DE0007236101&limit=50
+
  -> historical key figures, like total assets or other important balance sheet figures (JSON) (min year: 1999)
 There are more endpoints, these are only some examples.
 
