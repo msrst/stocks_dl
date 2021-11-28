@@ -1,5 +1,5 @@
 /* Copyright (C) 2019 Matthias Rosenthal
- * 
+ *
  * This file is part of stocks_dl.
  *
  * Stocks_dl is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ namespace boerse_frankfurt {
 const int BALANCE_SHEET_FIELD_COUNT = 51;
 const std::string FRANKFURT_STOCK_EXCHANGE = "XFRA";
 const std::string XETRA = "XETR";
-	
+
 // This fields are used for balance_sheet.data, p. e. my_balance_sheet.data[earning_per_share]
 // equals to the earning per share.
 // The fields also correspond to those of the english version of boerse-frankfurt.de:
@@ -96,7 +96,7 @@ const std::string field_names[BALANCE_SHEET_FIELD_COUNT] = {
     "Book value per share",
     "Cashflow per share",
     "Financial reporting currency",
-    "Debt Quity ratio",
+    "Debt equity ratio",  // modified from "Debt Quity ratio"
     "Debt ratio",
     "Dividend",
     "Dividend per share",
@@ -142,7 +142,7 @@ const std::string field_names[BALANCE_SHEET_FIELD_COUNT] = {
     "Working Capital"
 };
 // don't worry about errors - I generated this in excel from the BF
-// descriptions (embedded json in e. g. in 
+// descriptions (embedded json in e. g. in
 // https://www.boerse-frankfurt.de/aktie/siemens-ag main document)
 const bool printed_mio[BALANCE_SHEET_FIELD_COUNT] = {
 	true,
@@ -271,11 +271,11 @@ struct balance_sheet
 	int year;
 	std::string currency; // p. e. "EUR"
 	tnull_double_adv data[BALANCE_SHEET_FIELD_COUNT];
-	
+
 	void Print();
 };
 
 } // namespace boerse_frankfurt
 } // namespace stocks_dl
- 
+
 #endif // BOERSE_FRANKFURT_SHEET_HPP_INCLUDED

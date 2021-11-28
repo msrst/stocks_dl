@@ -129,7 +129,7 @@ std::vector<uint32_t> StringToUTF8String(std::string::const_iterator it_begin, s
 							// chars are skipped, no aborting.
 
 // Also ä, ö, ü can be upper- / lowercase.
-// Dafür werden text und muster vorher mit fn_StringToUTF8String konvertiert. Auch ß, ss und SS 
+// Dafür werden text und muster vorher mit fn_StringToUTF8String konvertiert. Auch ß, ss und SS
 // dürfen vertauscht werden.
 // If leerz is set, '-', '_' und ' ' are treated as equal.
 size_t str_find_caseinsensitive(const std::string &text, const std::string &muster, bool leerz = true); // When sucessful,
@@ -144,6 +144,9 @@ std::string str_remove_sidewhites(const std::string &text); // Removes tabulator
 
 uint64_t GetTime_Microseconds(); // 100 years need 52 bit
 long long int GetTime_Milliseconds(); // 100 years beed 42 bit -> long long int required (-> 64 bit)
+
+template<typename Tstr> // implemented for std::string and std::basic_string<uint8_t>
+std::string FormatToHex(Tstr string, bool small_caps, bool space); // "abc" -> "61 62 63" if space=true
 
 } // namespace stocks_dl
 

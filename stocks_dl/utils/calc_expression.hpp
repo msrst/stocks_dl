@@ -36,7 +36,7 @@
 #include <boost/spirit/include/phoenix_fusion.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 #include "utils.hpp"
 #include "logger.hpp"
@@ -306,7 +306,7 @@ struct grammar1
         // Ich kann nicht direkt *(graph - digit - punct) schreiben, weil der iso-kram, der ermöglicht, dass unicode-teilzeichen akzeptiert werden, nicht druckbare zeichen enthält.
         name = lexeme[(char_ - space - char_("=[\\]^{}") - char_('!', '@'))[qlabels::_val += qlabels::_1] > (*( (char_ - space - char_("=[\\]^{}:;<=>?@") - char_('!', '/')) // '_' muss erlaubt sein. char_('!', '@') nimmt alle Zeichen von '!' bis '@'
                             [qlabels::_val += qlabels::_1]))];
- 
+
         add.name("add");
         add_summand.name("add_summand");
         add_frontsummandnichts.name("add_frontsummandnichts");
@@ -331,7 +331,8 @@ struct grammar1
             //    << std::endl
             //boost::bind(mini_xml_grammar<Iterator>::handler, std::placeholders::_1, std::placeholders::_2)
             //boost::phoenix::function<error_handler<Iterator> >(e)(qlabels::_1, qlabels::_2, qlabels::_3, qlabels::_4)
-            boost::bind(&error_handler<Iterator>::handle_error, e, _1)
+            // boost::bind(&error_handler<Iterator>::handle_error, e, _1)  # its is depracted to use _1
+            boost::bind(&error_handler<Iterator>::handle_error, e, boost::placeholders::_1)
             );
         //on_success(xml,
         //    boost::bind(&error_handler<Iterator>::check, &e, _1)

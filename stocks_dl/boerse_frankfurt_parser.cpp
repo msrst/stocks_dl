@@ -1,5 +1,5 @@
 /* Copyright (C) 2019 Matthias Rosenthal
- * 
+ *
  * This file is part of stocks_dl.
  *
  * Stocks_dl is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 namespace pt = boost::property_tree;
 
 namespace stocks_dl {
-	
+
 // Removes the rows of vec whose indexes are in row_indices.
 // row_indices must be sorted so that the lowest index is the first.
 // It is checked wether an index is given multiple.
@@ -51,7 +51,7 @@ bf_converter::bf_converter(logger_base_ptr c_logger):
 	currency_balance_sheet_field(		 "Bilanzierungsw\xc3\xa4hrung")
 {
 	m_logger = c_logger;
-	
+
 	balance_sheet_fields.emplace_back("assetsCapitalTotal");
 	balance_sheet_fields.emplace_back("assetsCurrentTotal");
 	balance_sheet_fields.emplace_back("assetsTotal");
@@ -107,11 +107,11 @@ bf_converter::bf_converter(logger_base_ptr c_logger):
 	if(balance_sheet_fields.size() != BALANCE_SHEET_FIELD_COUNT) {
 		m_logger->LogError("Zuordnungen.size() = " + Int_To_String(balance_sheet_fields.size()) + ".");
 	}
-	
+
 	for(unsigned int i1 = 0; i1 < balance_sheet_fields.size(); i1++) {
 		bf_to_num[balance_sheet_fields[i1].bf_name] = i1;
 	}
-	
+
 	bf_kurs_heading_heading = "Datum";
 	bf_price_headings.push_back("Er\xc3\xb6""ffnung");
 	bf_price_headings.push_back("Schluss");
@@ -119,7 +119,7 @@ bf_converter::bf_converter(logger_base_ptr c_logger):
 	bf_price_headings.push_back("Tagestief");
 	bf_price_headings.push_back("Umsatz in \xe2\x82\xac"); // Euro
 	bf_price_headings.push_back("Umsatz in St\xc3\xbc""ck");
-	
+
 	bf_dividend_heading_heading = "Letzte Auszahlung";
 	bf_dividend_headings.push_back("Dividendenzyklus");
 	bf_dividend_headings.push_back("Betrag");
@@ -146,14 +146,14 @@ int bf_converter::BalanceSheetFromJson(long int stock_id, const std::string &jso
 					continue;
 				}
 
-				std::map<std::string, unsigned int>::iterator it_num = 
+				std::map<std::string, unsigned int>::iterator it_num =
 					bf_to_num.find(field_json.first);
 				if(it_num == bf_to_num.end()) {
-					m_logger->LogWarning("Boerse Frankfurt: could not use balance sheet value " + 
+					m_logger->LogWarning("Boerse Frankfurt: could not use balance sheet value " +
 						field_json.first + ".");
 				}
 				else {
-					boost::optional<double> value = 
+					boost::optional<double> value =
 							field_json.second.get_value_optional<double>();
 					if(value) {
 						new_sheet.data[it_num->second] = *value;
@@ -161,7 +161,7 @@ int bf_converter::BalanceSheetFromJson(long int stock_id, const std::string &jso
 					else {
 						// this just happens to often so don't pollute the command line
 						//m_logger->LogInformation("Boerse Frankfurt: could not convert balance sheet value for " +
-						//	field_names[it_num->second] + 
+						//	field_names[it_num->second] +
 						//		" to double. This can happen if it is null, for example.");
 					}
 				}
@@ -177,7 +177,7 @@ int bf_converter::BalanceSheetFromJson(long int stock_id, const std::string &jso
 	balance_sheets.insert(balance_sheets.end(), res.begin(), res.end());
 	return 0;
 }
-int bf_converter::PricesFromJson(const std::string &json, std::vector<daily_price> &prices)
+int bf_converter::PricesFromJson(const std::string &json, std::vector<daily_rate_nullable> &prices)
 {
 	prices.clear();
 
@@ -189,22 +189,22 @@ int bf_converter::PricesFromJson(const std::string &json, std::vector<daily_pric
 
 		int declaredCount = tree.get<int>("totalCount");
 		for(const pt::ptree::value_type &price_json : tree.get_child("data")) {
-			daily_price new_price;
+			daily_rate_nullable new_price;
 			bool ok;
 			new_price.handelstag = TimeDayFromString(price_json.second.get<std::string>("date"), &ok);
 			if(!ok) {
 				m_logger->LogError("Could not convert date " + price_json.second.get<std::string>("date") + ".");
 				return 1;
 			}
-			new_price.price_low = price_json.second.get<double>("low");
-			new_price.price_high = price_json.second.get<double>("high");
-			new_price.price_closing = price_json.second.get<double>("close");
-			new_price.price_open = price_json.second.get<double>("open");
-			new_price.volume = price_json.second.get<double>("turnoverPieces"); // note that there is also a field "turnoverEuro"
+			new_price.price_low = price_json.second.get_optional<double>("low");
+			new_price.price_high = price_json.second.get_optional<double>("high");
+			new_price.price_closing = price_json.second.get_optional<double>("close");
+			new_price.price_open = price_json.second.get_optional<double>("open");
+			new_price.volume = price_json.second.get_optional<double>("turnoverPieces"); // note that there is also a field "turnoverEuro"
 			prices.push_back(new_price);
 		}
 		if(prices.size() != declaredCount) {
-			m_logger->LogError("declared count of prices " + std::to_string(declaredCount) + 
+			m_logger->LogError("declared count of prices " + std::to_string(declaredCount) +
 				" != actual count " + std::to_string(prices.size()) + ".");
 			return 3;
 		}
@@ -245,7 +245,7 @@ int bf_converter::DividendsFromJson(const std::string &isin_check, const std::st
 		}
 	}
 	catch(boost::property_tree::ptree_error &e) {
-		m_logger->LogError("Error when parsing json from BoerseFrankfurt dividend: " + (std::string)e.what() + ".");
+		m_logger->LogError("Error when parsing json from BoerseFrankfurt with isin " + isin_check + "dividend: " + (std::string)e.what() + ".");
 		return 2;
 	}
 	return 0;
@@ -258,17 +258,18 @@ bool bf_converter::GetBFName_ViaSearch(const std::string &isin, mcurlwrapper &mc
 		return false;
 	}
 
-	const std::string getsite_url = "https://api.boerse-frankfurt.de/global_search/limitedsearch/de?searchTerms=" + isin;
+	const std::string getsite_url = "https://api.boerse-frankfurt.de/v1/global_search/limitedsearch/de?searchTerms=" + isin;
 	std::string sitedata;
-	if(mcurl.GetSite(getsite_url, sitedata, true)) {
+	if(mcurl.GetSite(getsite_url, sitedata, true, CalcTokens(getsite_url))) {
 		return false;
 	}
 
 	const std::string begin = "[[{\"isin\":\"" + isin + "\",\"slug\":\"";
 	if(!str_begins_with(sitedata, begin)) {
 		m_logger->LogError("Query at " + getsite_url + " does not begin with " + begin + ".");
+		m_logger->LogInformation("Sitedata was: " + sitedata.substr(0, std::min((std::size_t)200, sitedata.size())));
 		return false;
-	}	
+	}
 	size_t bfname_end = sitedata.find('"', begin.length());
 	if(bfname_end == std::string::npos) {
 		m_logger->LogError("BoerseFrankfurt-name did not end with double quotation (\").");

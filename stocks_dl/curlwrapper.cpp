@@ -1,5 +1,5 @@
 /* Copyright (C) 2019 Matthias Rosenthal
- * 
+ *
  * This file is part of stocks_dl.
  *
  * Stocks_dl is free software: you can redistribute it and/or modify
@@ -19,17 +19,18 @@
 #include <iostream>
 #include <curl/curl.h>
 #include <cstring>
+#include <map>
 
 #include "utils/utils.hpp"
 #include "curlwrapper.hpp"
 
 namespace stocks_dl {
-	
+
 size_t mcurlwrapper_write_callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
 	size_t realsize = size * nmemb;
 	mcurlwrapper *mc = (mcurlwrapper*)userp;
-	
+
 	mc->buf.append((char*)contents, realsize);
 	return realsize;
 }
@@ -40,13 +41,13 @@ mcurlwrapper::mcurlwrapper(logger_base_ptr c_logger)
 	b_ok = false;
 	b_get_configured = true;
 	m_b_follow_redirects = false;
-	
+
 	m_logger = c_logger;
 }
 mcurlwrapper::~mcurlwrapper()
 {
 	if(b_initialized) {
-		curl_easy_cleanup(easy_handle);	
+		curl_easy_cleanup(easy_handle);
 	}
 }
 
@@ -108,7 +109,7 @@ int mcurlwrapper::GetRedirect(std::string url, std::string &redirect)
 		return 3;
 	}
 	char *cstr_redirect;
-	res = curl_easy_getinfo(easy_handle, CURLINFO_REDIRECT_URL, &cstr_redirect); // man 
+	res = curl_easy_getinfo(easy_handle, CURLINFO_REDIRECT_URL, &cstr_redirect); // man
 					// curl_easy_getinfo says you should not delete variables from
 					// curl_easy_getinfo, and in an example from man CURLINFO_REDIRECT_URL
 					// it is not deleted.
@@ -133,7 +134,7 @@ int mcurlwrapper::GetRedirect(std::string url, std::string &redirect)
 		}
 	}
 }
-int mcurlwrapper::GetSite(std::string url, std::string &sitedata, bool b_follow_redirects)
+int mcurlwrapper::GetSite(std::string url, std::string &sitedata, bool b_follow_redirects, std::map<std::string, std::string> headers)
 {
 	buf.clear();
 	if(!b_get_configured) {
@@ -162,7 +163,24 @@ int mcurlwrapper::GetSite(std::string url, std::string &sitedata, bool b_follow_
 		}
 		m_b_follow_redirects = b_follow_redirects;
 	}
+
+	struct curl_slist *headers_slist = NULL;
+	for(std::pair<std::string, std::string> header : headers) {
+		headers_slist = curl_slist_append(headers_slist, (header.first + ": " + header.second).c_str());
+	}
+	if(curl_easy_setopt(easy_handle, CURLOPT_HTTPHEADER, headers_slist)) {
+		HandleCurlError("Could not set curl option httpheader");
+		return 5;
+	}
+
 	res = curl_easy_perform(easy_handle);
+
+	if(curl_easy_setopt(easy_handle, CURLOPT_HTTPHEADER, NULL)) { // Deletes the http header options, else they will be included in any future call
+		HandleCurlError("Could not set curl option httpheader to remove header options");
+		return 6;
+	}
+	curl_slist_free_all(headers_slist);
+
 	if(res) {
 		HandleCurlError("Could not perform request");
 		return 4;

@@ -1,5 +1,5 @@
 # Copyright (C) 2019 Matthias Rosenthal
-# 
+#
 # This file is part of stocks_dl.
 #
 # Stocks_dl is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 cmake_minimum_required (VERSION 3.0.2)
 project (stocks_dl_example)
 
-find_package(Boost COMPONENTS system signals)
+find_package(Boost COMPONENTS system)
 find_package(CURL)
 
 # if set, prints the command lines of the compilation steps

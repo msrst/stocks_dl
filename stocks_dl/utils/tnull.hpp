@@ -22,6 +22,7 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/optional.hpp>
 
 #include "utils.hpp"
 #include "../decl.hpp"
@@ -30,18 +31,18 @@ namespace stocks_dl {
 
 /* tnull
  * intelligent variable that normally acts like its type but also can be unset.
- * 
+ *
  * Examples:
  * tnull<double> my_ndouble = 1234.5;
  * std::cout << my_ndouble << std::endl; // prints 1234.5
- * 
+ *
  * my_ndouble.reset(); // now it is unset
  * if(!my_ndouble) { // !my_ndouble evaluates true because it is unset
  *     my_ndouble = 5;
  * }
- * 
+ *
  * double my_simple_double = *my_ndouble; // the value can be obtained with asterisk
- * 
+ *
  * tnull<double> my_ndouble2 = my_ndouble * my_simple_double; // my_ndouble2 is set if my_ndouble is also set
  */
 template <typename T>
@@ -49,11 +50,11 @@ class tnull
 {
 public:
 	boost::shared_ptr<T> ptr;
-	
+
 	tnull() {}
 	tnull(const T &val):
 		ptr(boost::make_shared<T>(val)) {}
-	
+
 	T& operator*() {
 		if(!ptr)
 			std::cout << "Warning: ptr == NULL" << std::endl;
@@ -79,7 +80,7 @@ public:
 	T* getptr() {
 		return ptr.get();
 	}
-	
+
 	tnull<T> &set(const T &val) {
 		ptr = boost::make_shared<T>(val);
 		return *this;
@@ -87,10 +88,19 @@ public:
 	tnull<T> &operator= (const T &val) {
 		return set(val);
 	}
+	tnull<T> &operator= (const boost::optional<T> &val) {
+		if(val.has_value()) {
+			return set(val.get());
+		}
+		else {
+			reset();
+			return *this;
+		}
+	}
 	void reset() {
 		ptr.reset();
 	}
-	
+
 	template <typename Tstream>
 	friend Tstream &operator<<(Tstream &c_stream, const tnull<T> &val) {
 		if(val)
@@ -99,7 +109,7 @@ public:
 		//	c_stream << "NULL";
 		return c_stream;
 	}
-	
+
 	friend tnull<T> operator*(const tnull<T> &a, const tnull<T> &b) {
 		if(a && b)
 			return (*a) * (*b);
@@ -126,7 +136,7 @@ public:
 		*this = (*this) * b;
 		return *this;
 	}
-	
+
 	friend tnull<T> operator/(const tnull<T> &a, const tnull<T> &b) {
 		if(a && b)
 			return (*a) / (*b);
@@ -162,6 +172,15 @@ class tnull_double_adv:
 public:
 	tnull_double& operator=(const double &val) {
 		return set(val);
+	}
+	tnull_double &operator= (const boost::optional<double> &val) {
+		if(val.has_value()) {
+			return set(val.get());
+		}
+		else {
+			reset();
+			return *this;
+		}
 	}
 
 	void FromString(string_to_int_converter &convertobj, std::string str, char komma_zeichen = '.', char tausender_zeichen = ',') {

@@ -25,7 +25,7 @@
 #include "../decl.hpp"
 
 namespace stocks_dl {
-	
+
 uint8_t Hex_To_uint8(char hex1, char hex2)
 {
     uint8_t ret = 0;
@@ -275,7 +275,7 @@ long long int string_to_int_converter::ConvertToLLIFromSIt_HexOk(std::string::it
 				begin--;
 			}
 		}
-        
+
         std::string::iterator it_zeichen = begin;
         bool negativ;
         if(*it_zeichen == '-') {
@@ -649,13 +649,13 @@ void str_replace_char(std::string &str, char suchen, std::string ersetzen)
 std::vector<std::string> str_split(const std::string &str, const std::string &split)
 {
 	std::vector<std::string> splits;
-	
+
 	if(split.empty()) {
 		std::cout << "Warnung: str_split: split = \"\"." << std::endl;
 		splits.push_back(split);
 		return splits;
 	}
-	
+
 	std::size_t splitstr_begin = 0;
 	do {
 		std::size_t splitstr_end = str.find(split, splitstr_begin);
@@ -809,19 +809,19 @@ size_t str_find_caseinsensitive(const std::string &text, const std::string &must
 {
 	std::vector<uint32_t> textu = StringToUTF8String(text.begin(), text.end());
 	std::vector<uint32_t> musteru = StringToUTF8String(muster.begin(), muster.end());
-	
+
 	str_find_caseinsensitive_mangle(textu, leerz);
 	str_find_caseinsensitive_mangle(musteru, leerz);
 	if(musteru.empty()) {
 		return std::string::npos;
 	}
-		
+
 	std::vector<bool> R(musteru.size() + 1);
     R[0] = 1; // Das erste Element ist nur Dummy und sorgt dafür, dass nach dem Bitshift R[1] mit 1 initialisiert wird
     for(size_t i = 0; i < textu.size(); i=i+1){
         for(int k = musteru.size(); k > 0; k -= 1){
             R[k] = R[k-1]; // Bitshift
-            bool equal = false; 
+            bool equal = false;
             if(textu[i] == musteru[k-1]){
                 equal = true;
             }
@@ -848,18 +848,18 @@ bool str_begins_with_caseinsensitive(const std::string &text, const std::string 
 {
 	std::vector<uint32_t> textu = StringToUTF8String(text.begin(), text.end());
 	std::vector<uint32_t> musteru = StringToUTF8String(muster.begin(), muster.end());
-	
+
 	str_find_caseinsensitive_mangle(textu, leerz);
 	str_find_caseinsensitive_mangle(musteru, leerz);
 	if(musteru.empty()) {
 		return false;
 	}
-		
+
     if(muster.size() > textu.size()) {
 		return false;
 	}
     for(size_t i = 0; i < musteru.size(); i=i+1){
-		bool equal = false; 
+		bool equal = false;
 		if(textu[i] == musteru[i]){
 			equal = true;
 		}
@@ -873,7 +873,7 @@ bool str_begins_with_caseinsensitive(const std::string &text, const std::string 
 				equal = true;
 			}
 		}
-		
+
 		if(!equal) {
 			return false;
 		}
@@ -1149,5 +1149,89 @@ long long int GetTime_Milliseconds()
     return ((long long int)(ts.tv_sec))*1000 + ((long long int)(ts.tv_nsec/1000000));
    #endif
 }
+
+template<typename Tstr>
+std::string FormatToHex(Tstr string, bool small_caps, bool space)
+{
+    std::string str_ret;
+    typename Tstr::iterator it_zeichen = string.begin();
+    if(string.empty()) {
+        return str_ret;
+    }
+    if(small_caps) {
+        uint8_t nibble = (((*it_zeichen) & 0xf0) >> 4);
+        if(nibble > 9) {
+            str_ret.append(1, 'a' - 10 + nibble);
+        }
+        else {
+            str_ret.append(1, '0' + nibble);
+        }
+        nibble = (*it_zeichen) & 0x0f;
+        if(nibble > 9) {
+            str_ret.append(1, 'a' - 10 + nibble);
+        }
+        else {
+            str_ret.append(1, '0' + nibble);
+        }
+        for(it_zeichen++; it_zeichen != string.end(); it_zeichen++) {
+            if(space) {
+                str_ret.append(1, ' ');
+            }
+            nibble = (((*it_zeichen) & 0xf0) >> 4);
+            if(nibble > 9) {
+                str_ret.append(1, 'a' - 10 + nibble);
+            }
+            else {
+                str_ret.append(1, '0' + nibble);
+            }
+            nibble = (*it_zeichen) & 0x0f;
+            if(nibble > 9) {
+                str_ret.append(1, 'a' - 10 + nibble);
+            }
+            else {
+                str_ret.append(1, '0' + nibble);
+            }
+        }
+    }
+    else {
+        uint8_t nibble = (((*it_zeichen) & 0xf0) >> 4);
+        if(nibble > 9) {
+            str_ret.append(1, 'A' - 10 + nibble);
+        }
+        else {
+            str_ret.append(1, '0' + nibble);
+        }
+        nibble = (*it_zeichen) & 0x0f;
+        if(nibble > 9) {
+            str_ret.append(1, 'A' - 10 + nibble);
+        }
+        else {
+            str_ret.append(1, '0' + nibble);
+        }
+        for(it_zeichen++; it_zeichen != string.end(); it_zeichen++) {
+            if(space) {
+                str_ret.append(1, ' ');
+            }
+            nibble = (((*it_zeichen) & 0xf0) >> 4);
+            if(nibble > 9) {
+                str_ret.append(1, 'A' - 10 + nibble);
+            }
+            else {
+                str_ret.append(1, '0' + nibble);
+            }
+            nibble = (*it_zeichen) & 0x0f;
+            if(nibble > 9) {
+                str_ret.append(1, 'A' - 10 + nibble);
+            }
+            else {
+                str_ret.append(1, '0' + nibble);
+            }
+        }
+    }
+    return str_ret;
+}
+// Instantiations
+template std::string FormatToHex(std::string string, bool small_caps, bool space);
+template std::string FormatToHex(std::basic_string<uint8_t> string, bool small_caps, bool space);
 
 } // namespace stocks_dl

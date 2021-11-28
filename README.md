@@ -1,6 +1,6 @@
 # stocks_dl
 
-Library for downloading stock data at boerse-frankfurt.de and finance.yahoo.com.
+Library for downloading stock data at boerse-frankfurt.de and finance.yahoo.com. Note that there are python libraries to download stock data from yahoo for free, which are much more comprehensible. The advantage of using boerse-frankfurt is that there is also balance sheet data available, as well as the quality of the price data is better because splits are included.
 
 Disclaimer: Please note that using this library may not be legal.
 
@@ -65,7 +65,7 @@ Downloads all dividends listed on www.boerse-frankfurt.de (boerse-frankfurt has 
 
 Displays balance sheets from www.boerse-frankfurt.de (boerse-frankfurt has only balance sheets for german companies), since 1999. Also gets the WKN and the stock exchange symbol. *DE0007236101* is the ISIN of the share to query data for.
 
-    ./example/example1 bf_prices DE0007236101
+    ./example/example1 bf_prices DE0007236101 01.03.2020_27.03.2020
 
 ![screenshot bf_prices](https://github.com/msrst/stocks_dl/blob/master/screenshots/bf_prices_20.png)
 
@@ -73,18 +73,18 @@ Displays balance sheets from www.boerse-frankfurt.de (boerse-frankfurt has only 
 
 In the second half of 2019, boerse-frankfurt completely changed their way of delivering stocks data to website users. Before, they seemed to do everything to confuse developers. For example, the server sent a calculation like 5 * 2 + 3 an which the web browser (or download tool) had to evaluate. The result was then sent back to the server when gathering stocks data.
 
-The new api is very comfortable to use: It seems to be a spring boot (java, tomcat) server. There are also verbose error messages enabled, so it is really comfortable to use this api.
-Here are some examples:
+The new api seems to be a spring boot (java, tomcat) server. In 2020, it was very easy to use. Since 2021, a few extra headers have to be passed.
+Here are some examples (they will only work with headers):
 
-https://api.boerse-frankfurt.de/data/price_history?limit=50&offset=0&isin=DE0007236101&mic=XFRA&minDate=2019-03-27&maxDate=2020-03-27
+https://api.boerse-frankfurt.de/v1/data/price_history?limit=50&offset=0&isin=DE0007236101&mic=XFRA&minDate=2019-03-27&maxDate=2020-03-27
 
  -> high, low, open, close, volume (JSON) (min year: depending on share, maybe 1990)
 
-https://api.boerse-frankfurt.de/data/dividend_information?isin=DE0007236101&limit=50
+https://api.boerse-frankfurt.de/v1/data/dividend_information?isin=DE0007236101&limit=50
 
  -> dividends JSON
 
-https://api.boerse-frankfurt.de/data/historical_key_data?isin=DE0007236101&limit=50
+https://api.boerse-frankfurt.de/v1/data/historical_key_data?isin=DE0007236101&limit=50
 
  -> historical key figures, like total assets or other important balance sheet figures (JSON) (min year: 1999)
 There are more endpoints, these are only some examples.

@@ -1,5 +1,5 @@
 /* Copyright (C) 2019 Matthias Rosenthal
- * 
+ *
  * This file is part of stocks_dl.
  *
  * Stocks_dl is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #include "decl.hpp"
 
 namespace stocks_dl {
-	
+
 struct isin_assignment
 {
 	std::string name;
@@ -38,7 +38,7 @@ struct stock_share
     std::string symbol_boerse;
     std::string name;
     std::string isin;
-    
+
     stock_share(unsigned int id = 0) {
 		this->id = id;
 	}
@@ -46,7 +46,7 @@ struct stock_share
 		name = c_isin_assignment.name;
 		isin = c_isin_assignment.isin;
 	}
-	
+
 	std::string YSymbol() const {
 		return symbol_name + '.' + symbol_boerse;
 	}
@@ -99,7 +99,7 @@ struct stock_share
 			return name;
 		}
 	}
-	
+
 };
 
 struct daily_price // price & volume of a day
@@ -110,7 +110,7 @@ struct daily_price // price & volume of a day
     double price_high;
     double price_low;
     tnull_double_adv volume;
-    
+
     void Print();
 };
 class daily_rate_nullable
@@ -139,9 +139,9 @@ struct dividend
 	std::string currency; // only set when using on boerse frankfurt
 };
 
-void AdjustSplits(std::vector<daily_rate_nullable>& prices, std::vector<shares_split>& splits); // Changes 
+void AdjustSplits(std::vector<daily_rate_nullable>& prices, std::vector<shares_split>& splits); // Changes
 													// the prices vector. For this, prices[.]->AdjustPrices(.) is used.
-                                            
+
 } // namespace stocks_dl
 
 #endif // STOCKS_DL_STOCKS_HPP_INCLUDED

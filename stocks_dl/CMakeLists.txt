@@ -1,5 +1,5 @@
 # Copyright (C) 2019 Matthias Rosenthal
-# 
+#
 # This file is part of stocks_dl.
 #
 # Stocks_dl is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ project (stocks_dl_lib)
 
 # If you do not want to use the default boost lib or if you do not have
 # installed it, you can use your own with cmake option -DBOOST_ROOT=/your/boost/root
-find_package(Boost COMPONENTS system signals)
+find_package(Boost COMPONENTS system date_time)
 find_package(CURL)
 
 # Can be set via cmake option -DSTOCKS_DL_DEBUG_OUTPUT=ON
@@ -35,10 +35,10 @@ configure_file (
 	"stocks_dl_config.h"
 )
 
-add_library(stocks_dl boerse_frankfurt.cpp boerse_frankfurt_sheet.cpp boerse_frankfurt_parser.cpp 
+add_library(stocks_dl boerse_frankfurt.cpp boerse_frankfurt_sheet.cpp boerse_frankfurt_parser.cpp
     curlwrapper.cpp dividends.cpp stocks.cpp time_day.cpp yahoodownloader.cpp
     utils/logger.cpp utils/calculator.cpp utils/csv_reader.cpp utils/utils.cpp)
-# include ${CMAKE_CURRENT_BINARY_DIR} (resolved to build/stocks_dl or something like that) to 
+# include ${CMAKE_CURRENT_BINARY_DIR} (resolved to build/stocks_dl or something like that) to
 # include the generated config file stocks_dl_config.h
 target_include_directories(stocks_dl PUBLIC ${Boost_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(stocks_dl ${Boost_LIBRARIES} pthread ssl crypto ${CURL_LIBRARIES})
